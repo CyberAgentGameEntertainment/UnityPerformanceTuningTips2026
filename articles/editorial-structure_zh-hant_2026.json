@@ -1,0 +1,9 @@
+{
+  "extends": "editorial-structure.json",
+  "part_titles": [
+    "圖形最佳化",
+    "腳本與動畫最佳化",
+    "資產、設定與建置最佳化",
+    "測量與自動化"
+  ]
+}

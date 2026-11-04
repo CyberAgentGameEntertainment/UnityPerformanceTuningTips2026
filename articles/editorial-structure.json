@@ -1,0 +1,65 @@
+{
+  "reference_pdf": "output/pdf/unity-performance-tuning-tips-2026-structure-order-preview.pdf",
+  "predef": [
+    "editorial-preface.re"
+  ],
+  "before_parts": [
+    "editorial-reader-guide.re",
+    "editorial-prologue.re"
+  ],
+  "parts": [
+    {
+      "title": "グラフィックス最適化",
+      "file": "editorial-part-1.re",
+      "intro": "editorial-intro-1.re",
+      "articles": [
+        "kiyohara-takayuki-1",
+        "zhang-yubing-1",
+        "zhang-yubing-2",
+        "nagatome-ryouhei-1",
+        "seto-noboru-1",
+        "amano-takuro-1"
+      ]
+    },
+    {
+      "title": "スクリプティング・アニメーション最適化",
+      "file": "editorial-part-2.re",
+      "intro": "editorial-intro-2.re",
+      "articles": [
+        "saito-shunsuke-1",
+        "shiotsuka-yuki-1",
+        "tatami-yuuki-1",
+        "kato-yuya-1",
+        "inada-taketo-1",
+        "zaitsu-hiromu-2"
+      ]
+    },
+    {
+      "title": "アセット・設定・ビルド最適化",
+      "file": "editorial-part-3.re",
+      "intro": "editorial-intro-3.re",
+      "articles": [
+        "inada-taketo-2",
+        "zaitsu-hiromu-1",
+        "sakuma-naoki-1",
+        "mukai-yuichiro-2",
+        "kim-minhyuk-1",
+        "kim-minhyuk-2"
+      ]
+    },
+    {
+      "title": "計測と自動化",
+      "file": "editorial-part-4.re",
+      "intro": null,
+      "articles": [
+        "yamazaki-masahiro-1",
+        "kim-minhyuk-3",
+        "nakamura-teruhisa-1"
+      ]
+    }
+  ],
+  "postdef": [
+    "editorial-afterword.re",
+    "editorial-contributors.re"
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "_comment": [
+    "著者プロフィールの正本。著者情報は原稿本文ではなくこのファイルを編集します。",
+    "キーは原稿のファイル名（拡張子なし）です。",
+    "name以外は任意。github/xはアカウント名かURL、webはURLを書きます。",
+    "エントリーがある記事は原稿冒頭の著者行を取り除き、整形したプロフィール枠に置き換えます。"
+  ],
+  "articles": {
+    "kiyohara-takayuki-1": {
+      "name": "清原 隆行",
+      "romaji": "Kiyohara Takayuki",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部",
+      "x": "nezumimusume"
+    },
+    "zhang-yubing-1": {
+      "name": "チャン ユービン",
+      "romaji": "ZHANG YUBING",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部"
+    },
+    "zhang-yubing-2": {
+      "name": "チャン ユービン",
+      "romaji": "ZHANG YUBING",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部"
+    },
+    "nagatome-ryouhei-1": {
+      "name": "永留 遼平",
+      "romaji": "Nagatome Ryouhei",
+      "affiliation": "株式会社Colorful Palette",
+      "github": "rngtm",
+      "x": "rn49rn49"
+    },
+    "seto-noboru-1": {
+      "name": "瀬戸 徳",
+      "romaji": "Noboru Seto",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部",
+      "github": "ruccho"
+    },
+    "amano-takuro-1": {
+      "name": "天野 択郎",
+      "romaji": "Amano Takuro",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部"
+    },
+    "saito-shunsuke-1": {
+      "name": "斉藤 俊介",
+      "romaji": "Shunsuke Saito",
+      "affiliation": "株式会社Colorful Palette"
+    },
+    "shiotsuka-yuki-1": {
+      "name": "塩塚 勇気",
+      "romaji": "Yuki Shiotsuka",
+      "affiliation": "QualiArts"
+    },
+    "tatami-yuuki-1": {
+      "name": "畳 悠樹",
+      "romaji": "Tatami Yuuki",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部",
+      "x": "tatamin0207"
+    },
+    "kato-yuya-1": {
+      "name": "加藤 有也",
+      "romaji": "KATO YUYA",
+      "affiliation": "株式会社Colorful Palette"
+    },
+    "inada-taketo-1": {
+      "name": "稲田 健人",
+      "romaji": "Inada Taketo",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部"
+    },
+    "inada-taketo-2": {
+      "name": "稲田 健人",
+      "romaji": "Inada Taketo",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部"
+    },
+    "zaitsu-hiromu-1": {
+      "name": "財津 大睦",
+      "romaji": "Zaitsu Hiromu",
+      "affiliation": "株式会社サムザップ",
+      "x": "RomGameclient"
+    },
+    "zaitsu-hiromu-2": {
+      "name": "財津 大睦",
+      "romaji": "Zaitsu Hiromu",
+      "affiliation": "株式会社サムザップ",
+      "x": "RomGameclient"
+    },
+    "sakuma-naoki-1": {
+      "name": "佐久間 尚輝",
+      "romaji": "NAOKI SAKUMA",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部"
+    },
+    "mukai-yuichiro-2": {
+      "name": "向井 祐一郎",
+      "romaji": "Mukai Yuichiro",
+      "affiliation": "株式会社アプリボット",
+      "github": "yucchiy",
+      "x": "yucchiy_",
+      "web": "https://blog.yucchiy.com"
+    },
+    "kim-minhyuk-1": {
+      "name": "キム ミンヒョク",
+      "romaji": "Minhyuk Kim",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部"
+    },
+    "kim-minhyuk-2": {
+      "name": "キム ミンヒョク",
+      "romaji": "Minhyuk Kim",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部"
+    },
+    "kim-minhyuk-3": {
+      "name": "キム ミンヒョク",
+      "romaji": "Minhyuk Kim",
+      "affiliation": "株式会社サイバーエージェント SGEコア技術本部"
+    },
+    "yamazaki-masahiro-1": {
+      "name": "山崎 雅大",
+      "romaji": "Yamazaki Masahiro",
+      "affiliation": "株式会社アプリボット",
+      "github": "mao-test-h",
+      "x": "TEST_H_"
+    },
+    "nakamura-teruhisa-1": {
+      "name": "中村光寿",
+      "romaji": "Teruhisa Nakamura",
+      "affiliation": "株式会社アプリボット"
+    }
+  }
+}

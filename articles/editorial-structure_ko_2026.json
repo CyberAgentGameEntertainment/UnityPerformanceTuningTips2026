@@ -1,0 +1,9 @@
+{
+  "extends": "editorial-structure.json",
+  "part_titles": [
+    "그래픽스 최적화",
+    "스크립팅·애니메이션 최적화",
+    "에셋·설정·빌드 최적화",
+    "계측과 자동화"
+  ]
+}

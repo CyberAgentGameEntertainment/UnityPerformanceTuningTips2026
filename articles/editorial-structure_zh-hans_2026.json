@@ -1,0 +1,9 @@
+{
+  "extends": "editorial-structure.json",
+  "part_titles": [
+    "图形优化",
+    "脚本与动画优化",
+    "资源、设置与构建优化",
+    "测量与自动化"
+  ]
+}

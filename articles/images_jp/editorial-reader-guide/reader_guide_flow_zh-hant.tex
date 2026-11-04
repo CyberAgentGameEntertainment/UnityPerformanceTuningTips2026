@@ -1,0 +1,88 @@
+% 課題別の逆引きガイドの流れ図（zh-hant 版）。reader_guide_flow.tex から scripts/gen-reader-guide-flow-tex.py で生成。
+% reader_guide_flow.pdf（PDF用）と reader_guide_flow.png（Web・EPUB用）の元データです。
+% 生成: scripts/build-reader-guide-flow.sh
+\documentclass[uplatex,dvipdfmx,class=ujarticle,border=1mm]{standalone}
+\usepackage[deluxe,uplatex]{otf}
+\usepackage[T1]{fontenc}
+\usepackage[noalphabet,unicode]{pxchfon}
+\setgothicfont{NotoSansTC-Regular.otf}
+\setboldgothicfont{NotoSansTC-Bold.otf}
+\renewcommand{\sfdefault}{phv}
+\renewcommand\familydefault{\sfdefault}
+\renewcommand\kanjifamilydefault{\gtdefault}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\definecolor{ink}{HTML}{2B2B2B}
+\definecolor{panel}{HTML}{F2F4F7}
+\definecolor{sub}{HTML}{55606E}
+
+\newcommand{\colw}{33mm}
+\newcommand{\colgap}{36mm}
+
+\begin{document}
+\kanjiskip=.05zw plus.5pt minus.5pt\xkanjiskip=0pt
+\begin{tikzpicture}[
+  font=\sffamily\gtfamily,
+  line/.style={draw=ink, line width=0.6pt},
+  arrow/.style={line, -{Stealth[length=2mm]}},
+  measure/.style={draw=ink, line width=0.8pt, rounded corners=1.5mm, fill=white,
+    align=center, inner sep=1.8mm, text width=120mm},
+  symptom/.style={align=center, font=\small\bfseries\gtfamily, text=ink},
+  section/.style={fill=ink, text=white, font=\bfseries\gtfamily, minimum height=7mm,
+    text width=\colw, align=center, inner sep=0pt},
+  leaf/.style={fill=white, draw=ink!25, line width=0.4pt, text width=\colw-4mm,
+    align=left, inner xsep=2mm, inner ysep=1.6mm, font=\footnotesize\gtfamily},
+]
+% 計測
+\node[measure] (measure) at (1.5*\colgap, 0) {%
+  {\large\bfseries 測量}\\[0.8mm]
+  {\small 進行方式與基本工具：前作 第1章、第3章\qquad
+  本書的測量手段：「先從測量開始」}};
+
+% 症状
+\node[symptom] (s1) at (0, -17mm) {應用程式容量過大};
+\node[symptom] (s2) at (\colgap, -17mm) {記憶體超出、當機};
+\node[symptom] (s3) at (2.5*\colgap, -17mm) {掉幀、尖峰};
+
+\draw[line] (measure.south) -- ++(0, -4mm) coordinate (bus);
+\draw[line] (0, 0 |- bus) -- (2.5*\colgap, 0 |- bus);
+\foreach \s in {s1, s2, s3} \draw[arrow] (\s |- bus) -- (\s.north);
+
+% 課題（本書の節）
+\foreach \x/\name/\label in {0/c1/容量, 1/c2/記憶體, 2/c3/CPU, 3/c4/GPU}
+  \node[section] (\name) at (\x*\colgap, -28mm) {\label};
+\draw[arrow] (s1.south) -- (c1.north);
+\draw[arrow] (s2.south) -- (c2.north);
+\draw[line] (s3.south) -- ++(0, -1.6mm) coordinate (split);
+\draw[line] (c3 |- split) -- (c4 |- split);
+\draw[arrow] (c3 |- split) -- (c3.north);
+\draw[arrow] (c4 |- split) -- (c4.north);
+
+% 症状ごとの章
+% \leafitem{上のノード}{名前}{症状}{章}
+% \ch{部-章}{短縮した章タイトル}：症状と章、章と章の間を1行空け、2行目以降は番号の後ろにそろえる
+\newcommand{\ch}[2]{\par
+  \vspace{\baselineskip}
+  \hangindent=2.2em\hangafter=1
+  \noindent\makebox[2.2em][l]{#1}#2}
+\newcommand{\leafitem}[4]{%
+  \node[leaf, below=1.6mm of #1] (#2) {{\bfseries #3}\par{\color{sub}#4\par}};}
+
+\leafitem{c1}{c1a}{資產持續增加}{\ch{3-1}{AssetBundle 的生命週期管理}\ch{3-2}{資產膨脹的調查}}
+\leafitem{c1a}{c1b}{程式碼過大}{\ch{3-4}{以 Code Stripping 縮減程式碼}\ch{3-5}{以 LTO 最佳化程式碼}}
+
+\leafitem{c2}{c2a}{到上限時當機}{\ch{3-6}{iOS 的記憶體上限}}
+\leafitem{c2a}{c2b}{未被釋放}{\ch{2-5}{UniTask 的生命週期管理}\ch{3-1}{AssetBundle 的生命週期管理}}
+\leafitem{c2b}{c2c}{繪製記憶體}{\ch{1-1}{Render Graph 圖塊記憶體最佳化}\ch{1-5}{以 RSUV 最佳化繪製}\ch{2-3}{以 VAT 減輕骨骼動畫負載}}
+
+\leafitem{c3}{c3a}{角色數量多}{\ch{2-1}{角色動畫的調優}\ch{2-2}{Animator 物件池化的初始化}\ch{2-3}{以 VAT 減輕骨骼動畫負載}}
+\leafitem{c3a}{c3b}{單次尖峰}{\ch{2-4}{ParticleSystem Simulate 的尖峰}}
+\leafitem{c3b}{c3c}{繪製註冊、UI}{\ch{1-2}{以 UnsafePass 減輕繪製註冊負擔}\ch{2-6}{UI 系統的取捨}}
+\leafitem{c3c}{c3d}{C\# 程式碼整體}{\ch{3-5}{以 LTO 最佳化程式碼}}
+
+\leafitem{c4}{c4a}{記憶體頻寬}{\ch{1-1}{Render Graph 圖塊記憶體最佳化}\ch{1-3}{省略 FinalBlitPass}}
+\leafitem{c4a}{c4b}{著色器運算}{\ch{1-4}{著色器超越函數的輕量化}}
+\leafitem{c4b}{c4c}{首次繪製卡頓}{\ch{1-6}{著色器預熱}}
+\leafitem{c4c}{c4d}{大量繪製、裝置差異}{\ch{1-5}{以 RSUV 最佳化繪製}\ch{3-3}{依裝置的繪製設定}}
+\end{tikzpicture}
+\end{document}

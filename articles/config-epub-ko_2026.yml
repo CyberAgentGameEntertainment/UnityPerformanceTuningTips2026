@@ -1,0 +1,13 @@
+# epub/PDF/Web（ko・2026年版）用の上書き設定。原稿は articles/text_ko_2026/
+# 序文・パート紹介などの editorial は articles/editorial_ko_2026/ の翻訳版を使い、日本語版と同じ構成にする。
+inherit: ["config-epub-jp.yml"]
+
+language: ko
+booktitle: {name: "Unity 퍼포먼스 튜닝 팁 2026", file-as: "UnityPerformanceTips2026"}
+# 奥付の発行表記。翻訳版自身の発行日は未定のため、原典である日本語版の初版日を明示する。
+history: [["일본어판 2026년 11월 2일 초판 제1쇄 발행"]]
+manuscript_dir: text_ko_2026
+catalogfile: catalog.yml
+editorial_dir: editorial_ko_2026
+editorial_structure: editorial-structure_ko_2026.json
+texstyle: ["reviewmacro", "review-font-ko", "review-disclaimer-ko"]

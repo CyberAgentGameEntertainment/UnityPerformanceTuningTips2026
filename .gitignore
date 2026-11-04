@@ -1,0 +1,20 @@
+node_modules/
+.sass-cache/
+
+articles/*.pdf
+articles/*.epub
+articles/*.html
+# articles/*.md
+articles/*.xml
+articles/*.txt
+articles/webroot/
+
+.DS_Store
+
+tmp/
+
+__pycache__/
+
+# 印刷用（入稿・グレースケール確認）PDFは公開しない
+output/pdf/output-print.pdf
+output/pdf/output-print-gray.pdf

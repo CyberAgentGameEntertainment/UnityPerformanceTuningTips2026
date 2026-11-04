@@ -1,0 +1,5 @@
+# Web版（en）用の上書き設定
+inherit: ["config-epub-en_2026.yml"]
+
+highlight:
+  html: "rouge"

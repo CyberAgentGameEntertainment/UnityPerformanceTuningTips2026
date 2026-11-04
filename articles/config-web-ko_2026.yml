@@ -1,0 +1,5 @@
+# Web版（ko）用の上書き設定
+inherit: ["config-epub-ko_2026.yml"]
+
+highlight:
+  html: "rouge"

@@ -1,0 +1,502 @@
+% for user-defined macro
+\usepackage{longtable}
+% 目次は見出しだけでなくページ番号もリンクにする。
+% media=print のビルドでは hyperref が draft のため、この設定は効果を持たない。
+\hypersetup{linktoc=all}
+% 長いURLは印刷版でも本文に印字されるため、版面からあふれないようにする。
+% url.sty は既定でも記号の直後に改行位置を持つが、\Urlmuskip が 0mu のため
+% ASCIIだけのURLには伸縮量がなく、TeX はどの改行位置も不適格と判断して
+% overfull box を選ぶ。伸縮量を与えたうえで改行位置を記号全般へ広げる。
+\def\UrlBreaks{\do\/\do\-\do\.\do\_\do\?\do\&\do\=\do\#\do\%\do\:\do\;\do\,\do\+\do\@\do\~}
+\def\UrlBigBreaks{}
+\Urlmuskip=0mu plus 3mu
+% 記号だけでは改行位置が足りず、記号間の1区間が長いURLは行に収まらない。
+% xurl で英数字の間にも改行位置を足し、行末までURLを詰める。
+\usepackage{xurl}
+% 縦長のスクリーンショットは本文幅に合わせると紙面の下へはみ出すため、
+% キャプションと同じページに収まる高さまで縮める（縦横比は保つ）。
+\usepackage[export]{adjustbox}
+\DeclareRobustCommand{\reviewincludegraphics}[2][]{%
+  \includegraphics[#1,max height=\dimexpr\textheight-4\baselineskip\relax]{#2}}
+% 本文中の型名・API名（CommandBuffer など）は英語のハイフネーションで
+% 「Command-Buffer」のように名前にないハイフンが入るため、review-ext.rb が
+% \reviewnohyphen で囲み、語の区切り（\reviewidbreak）でだけハイフンなしで改行する。
+\DeclareRobustCommand{\reviewnohyphen}[1]{{\language\l@nohyphenation#1}}
+\DeclareRobustCommand{\reviewidbreak}{\discretionary{}{}{}}
+% 原稿で表の列幅（mm）を明示した表は、列幅とセルの余白の合計が版面幅を超える場合だけ
+% 比率を保って縮める。収まる表は指定どおり 1mm 単位のまま。
+% #1: 列幅の合計（mm）, #2: 列数
+\newdimen\reviewtsizeunit
+\newcommand{\reviewfittsize}[2]{%
+  \reviewtsizeunit=\dimexpr\linewidth-#2\tabcolsep*2-\numexpr#2+1\relax\arrayrulewidth\relax
+  \reviewtsizeunit=\dimexpr\reviewtsizeunit*\number\dimexpr1mm\relax/\number\dimexpr#1mm\relax\relax
+  \ifdim\reviewtsizeunit>1mm \reviewtsizeunit=1mm\fi}
+% Wrap escaped Re:VIEW code without changing its Unicode contents.
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{reviewlist}{Verbatim}{commandchars=\\\{\},fontsize=\footnotesize,breaklines=true,breakanywhere=true}
+\DefineVerbatimEnvironment{reviewemlist}{Verbatim}{commandchars=\\\{\},fontsize=\footnotesize,breaklines=true,breakanywhere=true}
+\DefineVerbatimEnvironment{reviewsource}{Verbatim}{commandchars=\\\{\},fontsize=\footnotesize,breaklines=true,breakanywhere=true}
+\DefineVerbatimEnvironment{reviewcmd}{Verbatim}{commandchars=\\\{\},fontsize=\footnotesize,breaklines=true,breakanywhere=true}
+\BeforeBeginEnvironment{reviewlist}{\vspace{\baselineskip}}
+\BeforeBeginEnvironment{reviewemlist}{\vspace{\baselineskip}}
+\BeforeBeginEnvironment{reviewsource}{\vspace{\baselineskip}}
+\BeforeBeginEnvironment{reviewcmd}{\vspace{\baselineskip}}
+
+% コードハイライト（前作リポジトリのPR #43が採用したRider Islands Darkの配色に合わせる）
+% highlight.latex=listings のとき、Re:VIEWは上のVerbatimではなく listings の
+% reviewlistlst 系環境を使う。配色・折り返し・キャプションはここで作り直す。
+\ifdefined\review@highlightlatex
+% 既定は白地。印刷の網点とインク量を抑えるため、暗色は使わない。
+% 明色側は1色（スミ）印刷でも読み分けられるよう、グレー変換したときの濃度が
+% キーワード＞地の文＞文字列＞コメントの順になる色を選び、太字・斜体も併用する。
+% Web版と同じ暗色にする場合は次を \reviewcodedarktrue にする。
+\newif\ifreviewcodedark
+\reviewcodedarkfalse
+\ifreviewcodedark
+  \definecolor{reviewcodebg}{HTML}{191A1C}
+  \definecolor{reviewcodefg}{HTML}{BDBDBD}
+  \definecolor{reviewcodekeyword}{HTML}{6C95EB}
+  \definecolor{reviewcodestring}{HTML}{C9A26D}
+  \definecolor{reviewcodecomment}{HTML}{85C46C}
+  \definecolor{reviewcodegutter}{HTML}{808080}
+\else
+  \definecolor{reviewcodebg}{HTML}{F2F3F5}      % スミ 5%
+  \definecolor{reviewcodefg}{HTML}{3C3C3C}      % スミ 76%
+  \definecolor{reviewcodekeyword}{HTML}{10265E} % スミ 85%（＋太字）
+  \definecolor{reviewcodestring}{HTML}{7A4A12}  % スミ 68%
+  \definecolor{reviewcodecomment}{HTML}{4A6B3A} % スミ 64%（＋斜体）
+  \definecolor{reviewcodegutter}{HTML}{8C8C8C}  % スミ 45%
+\fi
+\@ifpackageloaded{listings}{%
+  % C#の #if / #region を色分けするために directives アスペクトを読み込む。
+  \lstloadaspects{directives}
+  % Re:VIEWは //list[..][..][lang] の lang をそのまま language= へ渡すため、
+  % listings が知らない名前が1つでもあるとビルドが止まる。
+  \lstdefinelanguage{csharp}[Sharp]{C}{%
+    morekeywords={var,dynamic,async,await,yield,partial,record,init,%
+      nameof,where,when,with,global,required,scoped,nint,nuint},%
+    moredelim=*[directive]\#,%
+    moredirectives={define,undef,if,elif,else,endif,line,error,warning,%
+      region,endregion,pragma,nullable},%
+    sensitive=true,%
+  }
+  \lstalias[]{objc}[Objective]{C}
+  \lstalias{cpp}{C++}
+  \lstdefinelanguage{hlsl}[ANSI]{C}{%
+    morekeywords={half,half2,half3,half4,fixed,fixed2,fixed3,fixed4,%
+      float2,float3,float4,float2x2,float3x3,float4x4,int2,int3,int4,%
+      uint,uint2,uint3,uint4,bool2,bool3,bool4,matrix,vector,%
+      Texture2D,Texture2DArray,Texture3D,TextureCube,RWTexture2D,SamplerState,%
+      StructuredBuffer,RWStructuredBuffer,ByteAddressBuffer,ConstantBuffer,%
+      cbuffer,tbuffer,groupshared,register,packoffset,numthreads,%
+      inout,uniform,nointerpolation,centroid,noperspective,%
+      sampler2D,sampler3D,samplerCUBE,tex2D,tex3D,texCUBE,lerp,saturate,mul},%
+    sensitive=true,%
+  }
+  \lstdefinelanguage{yaml}{%
+    morekeywords={true,false,null,yes,no,on,off},%
+    morecomment=[l]\#,%
+    morestring=[b]",%
+    morestring=[b]',%
+    sensitive=false,%
+  }
+  \lstdefinelanguage{text}{}
+  \lstset{%
+    basicstyle=\ttfamily\footnotesize\color{reviewcodefg},%
+    identifierstyle=\color{reviewcodefg},%
+    keywordstyle=\bfseries\color{reviewcodekeyword},%
+    directivestyle=\color{reviewcodekeyword},%
+    commentstyle=\itshape\color{reviewcodecomment},%
+    stringstyle=\color{reviewcodestring},%
+    numberstyle=\ttfamily\scriptsize\color{reviewcodegutter},%
+    numbersep=0.8em,%
+    backgroundcolor=\color{reviewcodebg},%
+    frame=single,framerule=0pt,rulecolor=\color{reviewcodebg},%
+    % breakautoindent は columns=fullflexible だと効かない（fixed にすると和文が
+    % 字間空きになる）。折り返し行は breakindent で一段下げて見分ける。
+    breaklines=true,breakatwhitespace=false,breakautoindent=false,breakindent=2em,%
+    columns=fullflexible,keepspaces=true,fontadjust=true,%
+    showstringspaces=false,upquote=true,%
+    % ラテン1補助の記号（×±など）はlistingsの中でinputencのUTF-8処理が壊れるので、
+    % 8bit文字を素通しさせたうえで置換して出す。全角・CJK域の記号は素のままで通る。
+    extendedchars=true,%
+    literate={×}{{\texttimes}}1 {±}{{\textpm}}1,%
+    % 余白は枠を版面より少し外へ広げて作る。xleftmargin で内側へ寄せると、
+    % breaklines で折り返した行が枠の外に出てしまう。
+    framesep=0.7em,framexleftmargin=0pt,framexrightmargin=0pt,%
+    xleftmargin=0pt,xrightmargin=0pt,%
+    aboveskip=\baselineskip,belowskip=0.5\baselineskip,%
+    captionpos=t,%
+  }
+  % キャプションは従来の \reviewlistcaption と同じ体裁（左寄せ・▼付き）に戻す。
+  % listings は \lst@maketitle を \AtBeginDocument で書き換えるため、後から上書きする。
+  \def\review@fnumlstlisting{{\lstlistingnamestyle\lstlistingname
+    \ifx\lst@@caption\@empty\else\thelstlisting\fi}}
+  \long\def\review@lstmakecaption#1#2{%
+    {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}%
+     \buildcaption{}{#1}{#2}}\par\vskip2pt}
+  \long\def\review@lstmaketitle#1{%
+    {\def\captionhead{\sffamily{\color{black!30!white}{▼}}}%
+     \buildcaption{}{}{#1}}\par\vskip2pt}
+  \AtBeginDocument{%
+    \let\fnum@lstlisting\review@fnumlstlisting
+    \let\lst@makecaption\review@lstmakecaption
+    \let\lst@maketitle\review@lstmaketitle
+  }
+}{}
+\fi
+\usepackage[noalphabet, unicode]{pxchfon} % pxchfonパッケージを使用してフォント系を設定する
+
+% 明朝体をUD明朝に
+\setminchofont{BIZUDMincho-Regular.ttf}
+\setboldminchofont{BIZUDMincho-Regular.ttf}
+% ゴシック体をUDゴシックに
+\setgothicfont{BIZUDGothic-Regular.ttf}
+\setboldgothicfont{BIZUDGothic-Bold.ttf}
+% OSSのBIZ UDフォントにはウェイト違いのフォントが無い
+%\setlightminchofont{BIZUDGothic-Regular.ttf}
+%\setmediumminchofont{BIZUDGothic-Regular.ttf}
+%\setmediumgothicfont{BIZUDGothic-Regular.ttf}
+%\setxboldgothicfont{BIZUDGothic-Bold.ttf}
+
+% 欧文をサンセリフに、和文のフォントをゴシック体に変更
+\renewcommand\familydefault{\sfdefault}
+\renewcommand\kanjifamilydefault{\gtdefault}
+\normalfont
+
+% 文字送りを0.05文字幅に変更
+\def\reviewbegindocumenthook{\kanjiskip=.05zw plus.5pt minus.5pt\xkanjiskip=0pt}
+
+% 章見出しの上部の余白を無効化
+% for user-defined macro
+\def\@makechapterhead#1{%
+%  \vspace*{2\Cvs}% 欧文は50pt →上空きを無効化
+  {\parindent \z@ \raggedright \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        % 章扉は置かない（全体ビルドでは部扉だけを立て、記事プレビューには扉を置かない）。
+        \huge\headfont \@chapapp\thechapter\@chappos % 第x章
+        \par\nobreak
+        \vskip \Cvs % 欧文は20pt
+      \fi
+    \fi
+    \interlinepenalty\@M
+    \Huge \headfont #1\par\nobreak % 章タイトル
+    \vskip 3\Cvs}} % 欧文は40pt
+% 見出しの上下の余白を詰めた番号なし章見出し。目次と、原稿で
+% \reviewcompactschapterhead を置いた直後の番号なし章に1回だけ使う
+\newif\ifreview@compactschapterhead
+\newcommand{\reviewcompactschapterhead}{\global\review@compactschapterheadtrue}
+\let\review@origmakeschapterhead\@makeschapterhead
+\def\@makeschapterhead#1{%
+  \ifreview@compactschapterhead
+    \global\review@compactschapterheadfalse
+    {\parindent \z@ \raggedright
+      \normalfont
+      \interlinepenalty\@M
+      \Huge \headfont #1\par\nobreak
+      \vskip 1.5\Cvs}%
+  \else
+    \review@origmakeschapterhead{#1}%
+  \fi}
+% 逆引きガイドの節は改ページ直後に置くため、見出しの前アキを付けない
+\newcommand{\reviewguidesection}{%
+  \@startsection{section}{1}{\z@}%
+    {\z@}%
+    {.5\Cvs \@plus.3\Cdp}%
+    {\normalfont\Large\headfont\raggedright}}
+% 目次を2ページに収め、左ページから見開きで組む
+\let\reviewtoc@origtableofcontents\tableofcontents
+\renewcommand{\tableofcontents}{%
+  \cleardoublepage
+  \reviewcompactschapterhead
+  \reviewtoc@origtableofcontents}
+% 記事冒頭の著者プロフィール枠（articles/authors.json から生成）
+\usepackage{fontawesome5}
+\usepackage[most]{tcolorbox}
+\definecolor{authorprofileback}{HTML}{F2F4F7}
+\definecolor{authorprofileaccent}{HTML}{1F2937}
+\definecolor{authorprofilesub}{HTML}{55606E}
+
+\newtcolorbox{reviewauthorprofilebox}{
+  enhanced, breakable=false, sharp corners, boxrule=0pt, frame hidden,
+  colback=authorprofileback,
+  borderline west={2.6pt}{0pt}{authorprofileaccent},
+  left=10pt, right=10pt, top=7pt, bottom=7pt,
+  before skip=6pt, after skip=16pt}
+
+\newcommand{\reviewauthorprofile}[1]{%
+  \par\noindent\begin{reviewauthorprofilebox}#1\end{reviewauthorprofilebox}}
+\newcommand{\reviewauthorname}[1]{{\large\bfseries #1}}
+\newcommand{\reviewauthorromaji}[1]{\hspace{0.6em}{\small\color{authorprofilesub}#1}}
+\newcommand{\reviewauthoraffiliation}[1]{%
+  \par\vspace{2pt}{\small\color{authorprofilesub}\faBuilding\hspace{0.45em}#1}}
+\newcommand{\reviewauthorlinks}[1]{\par\vspace{4pt}{\small #1}}
+\newcommand{\reviewauthorsep}{\hspace{1.3em}}
+\newcommand{\reviewauthorlink}[3]{%
+  \mbox{{\color{authorprofileaccent}#1}\hspace{0.4em}\href{#2}{#3}}}
+\newcommand{\reviewauthoricongithub}{\faGithub}
+\newcommand{\reviewauthoriconweb}{\faGlobe}
+\newcommand{\reviewauthoriconx}{\textbf{X}}
+
+% 章扉・部扉（articles/editorial-structure.json を使う全体ビルドだけに出す）
+% 背景の塗りはatbegshiで置きます。eso-pic（pxesopic）はplautopatchの
+% 読み込みフックと衝突してビルドが止まるため使いません。
+\RequirePackage{atbegshi}
+\definecolor{reviewdividerink}{HTML}{2B2B2B}
+
+% atbegshiの原点は「TeXの原点から1インチ左上」です。トンボ付き（media=print）は
+% TeXの原点が仕上がり位置なので、1インチ分だけ右下に戻してから塗ります。
+\newlength{\reviewdividerorigin}
+\setlength{\reviewdividerorigin}{\z@}
+% 塗り足し。トンボ付きではgentombowのBleedBoxと同じ幅にそろえる。
+\newlength{\reviewdividerbleed}
+\setlength{\reviewdividerbleed}{3mm}
+\AtBeginDocument{%
+  \@ifpackageloaded{gentombow}{%
+    \setlength{\reviewdividerorigin}{1in}%
+    \setlength{\reviewdividerbleed}{\@tombowbleed}}{}}
+
+% 仕上がり紙面の左上を原点に、塗り足しまで含めた紙面いっぱいに#1を置く。
+% atbegshiの\AtBeginShipoutUpperLeftの中で使い、幅を取らないので続けて重ねられる。
+\newcommand{\reviewdividerbleedbox}[1]{%
+  \kern\dimexpr\reviewdividerorigin-\reviewdividerbleed\relax
+  \rlap{\raisebox{-\dimexpr\reviewdividerorigin+\paperheight+\reviewdividerbleed\relax}[\z@][\z@]{#1}}%
+  \kern-\dimexpr\reviewdividerorigin-\reviewdividerbleed\relax}
+% 塗り足しを含まない仕上がり紙面いっぱいに#1を置く。
+\newcommand{\reviewdividertrimbox}[1]{%
+  \kern\reviewdividerorigin
+  \rlap{\raisebox{-\dimexpr\reviewdividerorigin+\paperheight\relax}[\z@][\z@]{#1}}%
+  \kern-\reviewdividerorigin}
+
+% 地色を塗るページでは隠しノンブルを白抜きにする。
+\newif\ifreviewdividerpage
+
+% 紙面いっぱいの地色（塗り足しまで）。
+\newcommand{\reviewdividerbackground}{%
+  \global\reviewdividerpagetrue
+  \AtBeginShipoutNext{%
+    \AtBeginShipoutUpperLeft{%
+      \reviewdividerbleedbox{\textcolor{reviewdividerink}{%
+        \rule{\dimexpr\paperwidth+2\reviewdividerbleed\relax}%
+          {\dimexpr\paperheight+2\reviewdividerbleed\relax}}}}}}
+
+% 隠しノンブル（config-jp.yml の hiddenfolio=nikko-pc）。印刷所が丁合を確かめる
+% ため、扉・白ページを含む全ページのノドに入れる。review-jsbook.cls は
+% everypageのフックでトンボの箱を作り直すが、現行のLaTeXではこのフックが
+% グループ内で動いて箱が捨てられ、全ページが1になる。ページを出力する直前に
+% 作り直す。
+\AtBeginDocument{%
+  \@ifpackageloaded{gentombow}{%
+    \ifdefined\@makehiddenfolio
+      \let\reviewhiddenfolio@outputtombow\@outputtombow
+      \def\@outputtombow{%
+        \maketombowbox\reviewhiddenfolio@outputtombow
+        \global\reviewdividerpagefalse}%
+      \g@addto@macro\hiddenfolio@font{\ifreviewdividerpage\color{white}\fi}%
+    \fi}{}}
+
+% 扉の体裁。#1: 種別（PART）、#2: 2桁の番号、#3: 和文の見出し（第N部）、#4: タイトル
+% 前作『Unity パフォーマンスチューニング バイブル』の章扉画像と同じ割付。寸法はすべて
+% 元画像の画素数を枠幅 \reviewdividerwidth との比に直した値を使う。
+\newlength{\reviewdividerwidth}
+\newlength{\reviewdividerinner}
+\newlength{\reviewdivideroffset}
+\newlength{\reviewdividervoffset}
+\newlength{\reviewdividerdima}
+\newlength{\reviewdividerdimb}
+\newcommand{\reviewdividerfont}{\headfont\bfseries}
+% 和文は極太ゴシック（japanese-otf の deluxe オプション）で組む。
+\newcommand{\reviewdividerjafont}{%
+  \reviewdividerfont\@ifundefined{ebseries}{}{\ebseries}}
+\providecommand{\reviewdividerlogo}{/book/articles/images/divider/unity_logo.png}
+\providecommand{\reviewdividermarkupper}{UNITY}
+\providecommand{\reviewdividermarklower}{PERFORMANCE TUNING TIPS 2026}
+\providecommand{\reviewdividerfooter}{CyberAgent Smartphone Games \& Entertainment}
+
+% 字面と行送りを枠幅との比で指定する。
+\newcommand{\reviewdividersetfont}[2]{%
+  \setlength{\reviewdividerdima}{#1\reviewdividerwidth}%
+  \setlength{\reviewdividerdimb}{#2\reviewdividerwidth}%
+  \fontsize{\the\reviewdividerdima}{\the\reviewdividerdimb}\selectfont}
+
+% 高さを明示した箱。行送りを殺してあるので、余白は \vspace だけで決まる。
+\newcommand{\reviewdividerrow}[2]{%
+  \centerline{\raisebox{\z@}[#1\reviewdividerwidth][\z@]{#2}}}
+
+% 部番号は2桁で組む。
+\newcommand{\reviewdividertwodigit}[1]{\ifnum\value{#1}<10 0\fi\arabic{#1}}
+
+% 版面の中央ではなく紙面の中央に寄せて組むための箱。
+\newcommand{\reviewdividercenter}[1]{%
+  \noindent\hb@xt@\textwidth{%
+    \kern\reviewdivideroffset\hss #1\hss\kern-\reviewdivideroffset}\par}
+
+\newcommand{\reviewdividerbody}[4]{%
+  \thispagestyle{empty}%
+  \reviewdividerbackground
+  \begingroup
+  \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}%
+  \xkanjiskip=\z@\relax
+  \setlength{\reviewdividerwidth}{0.60\textwidth}%
+  \setlength{\reviewdividerinner}{0.8716\reviewdividerwidth}%
+  \setlength{\fboxsep}{0pt}%
+  \setlength{\fboxrule}{0.0126\reviewdividerwidth}%
+  % 版面ではなく仕上がり紙面の中央に置く（左右ページで位置を変えない）
+  \ifodd\value{page}%
+    \setlength{\reviewdivideroffset}{%
+      \dimexpr.5\paperwidth-1in-\oddsidemargin-.5\textwidth\relax}%
+  \else
+    \setlength{\reviewdivideroffset}{%
+      \dimexpr.5\paperwidth-1in-\evensidemargin-.5\textwidth\relax}%
+  \fi
+  \setlength{\reviewdividervoffset}{%
+    \dimexpr.5\paperheight-1in-\topmargin-\headheight-\headsep-.5\textheight\relax}%
+  \vspace*{\dimexpr\reviewdividervoffset-.5\topskip\relax}\vspace*{\stretch{1}}%
+  \reviewdividercenter{%
+    \fcolorbox{white}{reviewdividerink}{%
+      \begin{minipage}{\reviewdividerwidth}%
+        \baselineskip\z@skip \lineskip\z@skip \lineskiplimit\z@
+        % 書名の板
+        \colorbox{white}{%
+          \begin{minipage}{\reviewdividerwidth}%
+            \baselineskip\z@skip \lineskip\z@skip \lineskiplimit\z@
+            \color{reviewdividerink}\reviewdividerfont
+            \vspace{0.0596\reviewdividerwidth}%
+            \reviewdividerrow{0.2913}{%
+              \IfFileExists{\reviewdividerlogo}{%
+                \includegraphics[width=\reviewdividerinner]{\reviewdividerlogo}}{%
+                \reviewdividersetfont{0.15}{0.15}\reviewdividermarkupper}}%
+            \vspace{0.0298\reviewdividerwidth}%
+            \reviewdividerrow{0.0126}{\rule{\reviewdividerinner}{0.0126\reviewdividerwidth}}%
+            \vspace{0.0275\reviewdividerwidth}%
+            \reviewdividerrow{0.0401}{%
+              \reviewdividersetfont{0.0573}{0.0573}\reviewdividermarklower}%
+            \vspace{0.0734\reviewdividerwidth}%
+          \end{minipage}}\par
+        % 種別と番号
+        \color{white}\reviewdividerfont
+        \vspace{0.0814\reviewdividerwidth}%
+        \reviewdividerrow{0.2718}{%
+          \hb@xt@\reviewdividerinner{%
+            \raisebox{0.0780\reviewdividerwidth}{%
+              \vbox{%
+                \hbox{\kern0.0023\reviewdividerwidth
+                  \reviewdividersetfont{0.0745}{0.0745}#1}%
+                \kern0.0172\reviewdividerwidth
+                \hrule height 0.0115\reviewdividerwidth}}%
+            \hfill
+            \reviewdividersetfont{0.3773}{0.3773}#2}}%
+        \vspace{0.0711\reviewdividerwidth}%
+        \reviewdividerrow{0.0126}{\rule{\reviewdividerwidth}{0.0126\reviewdividerwidth}}%
+        % 和文の見出しとタイトル
+        \vspace{0.1158\reviewdividerwidth}%
+        \reviewdividerrow{0.0906}{%
+          \reviewdividerjafont\reviewdividersetfont{0.1032}{0.1032}#3}%
+        \vspace{0.1032\reviewdividerwidth}%
+        \reviewdividerrow{0.0115}{\rule{\reviewdividerinner}{0.0115\reviewdividerwidth}}%
+        \vspace{0.1147\reviewdividerwidth}%
+        \centerline{%
+          \begin{minipage}{\reviewdividerinner}%
+            \centering\color{white}\reviewdividerjafont
+            \reviewdividersetfont{0.0803}{0.1147}#4\par
+          \end{minipage}}%
+        \vspace{0.1319\reviewdividerwidth}%
+      \end{minipage}}}%
+  \par\vspace{0.030\reviewdividerwidth}%
+  \reviewdividercenter{{\color{white}\reviewdividerfont
+    \reviewdividersetfont{0.032}{0.032}\reviewdividerfooter}}%
+  \vspace*{\stretch{1}}\vspace*{\dimexpr.5\topskip-\reviewdividervoffset\relax}%
+  \endgroup}
+
+% デザイナー支給の扉（1ページ目が大扉、2ページ目以降が第1部からの部扉）。
+% 仕上がりサイズで塗り足しなしの支給なので、塗り足しをこちらで補う。
+% 支給データはレイヤーを統合済みのIllustrator PDFをそのまま置く。
+% \reviewdividerdesignpages は支給PDFのページ数で、テストが実物と照合する。
+%ファイルがないか、部の数がページ数を超えたら組み版の扉を出す。
+\providecommand{\reviewdividerdesign}{/book/articles/images/divider/tuning-tips-2026-interior.pdf}
+\providecommand{\reviewdividerdesignpages}{5}
+\newcommand{\reviewdividerdesignpage}[1]{%
+  \global\reviewdividerpagetrue
+  \xdef\reviewdividerdesign@page{\the\numexpr#1\relax}%
+  \AtBeginShipoutNext{%
+    \AtBeginShipoutUpperLeft{%
+      % 塗り足しは同じ扉を塗り足し寸法まで伸ばして敷く。扉の外周は地色だけなので、
+      % 地色と同じ色空間（K90%）のまま塗り足しが埋まる。その上に、仕上がり位置へ
+      % 原寸の扉を重ねる。
+      \reviewdividerbleedbox{%
+        \includegraphics[page=\reviewdividerdesign@page,
+          width=\dimexpr\paperwidth+2\reviewdividerbleed\relax,
+          height=\dimexpr\paperheight+2\reviewdividerbleed\relax]{\reviewdividerdesign}}%
+      \reviewdividertrimbox{%
+        \includegraphics[page=\reviewdividerdesign@page,
+          width=\paperwidth,height=\paperheight]{\reviewdividerdesign}}}}%
+  \null}
+% 支給の扉の#1ページ目があれば#2、なければ#3。
+\newcommand{\reviewifdividerdesign}[3]{%
+  \IfFileExists{\reviewdividerdesign}{%
+    \ifnum\numexpr#1\relax>\reviewdividerdesignpages\relax
+      \PackageWarning{review-custom}{%
+        \reviewdividerdesign\space has no page \the\numexpr#1\relax;
+        using the typeset divider}%
+      #3%
+    \else #2\fi}{#3}}
+
+% 大扉。支給の扉の1ページ目を置く。なければ書名を組む。
+\newcommand{\reviewtitlepage}{%
+  \begin{titlepage}%
+    \reviewifdividerdesign{1}{%
+      \includefullpagegraphics[page=1,width=\paperwidth,height=\paperheight]{\reviewdividerdesign}}{%
+      \null\vfil
+      \begin{center}\headfont\Huge\review@booktitlename\end{center}%
+      \vfil\null}%
+  \end{titlepage}\clearpage}
+
+% 部扉。構成定義を使わないビルドでは従来どおりの部扉を出します。
+\let\reviewjsbook@part\@part
+\def\@part[#1]#2{%
+  \ifdefined\reviewstructuredbook
+    % hyperrefが元の\@partに付けていたアンカーを引き継ぐ
+    \ifdefined\Hy@secnum@part
+      \ifnum\Hy@secnum@part>\c@secnumdepth \phantomsection\fi
+    \fi
+    \ifnum \c@secnumdepth >-2\relax
+      \refstepcounter{part}%
+      \addcontentsline{toc}{part}{\prepartname\thepart\postpartname\hspace{1zw}#1}%
+    \else
+      \addcontentsline{toc}{part}{#1}%
+    \fi
+    \markboth{}{}%
+    \reviewifdividerdesign{\value{part}+1}{%
+      \reviewdividerdesignpage{\value{part}+1}}{%
+      \reviewdividerbody{PART}{\reviewdividertwodigit{part}}%
+        {\prepartname\thepart\postpartname}{#2}}%
+    \@endpart
+  \else
+    \reviewjsbook@part[#1]{#2}%
+  \fi}
+
+% 章（はじめに・目次・序章・動向・おわりになども含む）は左ページから始めて
+% 見開きに組み、部扉だけを右ページに置く。部扉の裏は白紙にせず次の章を始める。
+\@openlefttrue\@openrightfalse
+\let\cleardoublepage\pltx@cleartoleftpage
+\renewcommand\part{%
+  \pltx@cleartooddpage
+  \thispagestyle{empty}%
+  \@restonecolfalse
+  \null\vfil
+  \secdef\@part\@spart}
+\def\@endpart{\vfil\newpage}
+% 奥付のページの上部に免責事項を置く
+\newcommand{\reviewcolophondisclaimer}{%
+  {\noindent\headfont\large 免責事項\par}\vspace{.5\Cvs}
+  本書に記載された内容は情報の提供のみを目的としています。したがって、本書を用いた開発、製作、運用は必ずご自身の責任と判断によって行ってください。これらの情報による開発、製作、運用の結果について当社はいかなる責任も負いません。\par}
+\let\review@origcolophon\reviewcolophon
+\renewcommand{\reviewcolophon}{\review@origcolophon\reviewcolophondisclaimer}
+% 表紙の後だけは従来どおり右ページへ送り、大扉を右ページに置く
+\ifdefined\reviewcoverpagecont
+  \let\review@origcoverpagecont\reviewcoverpagecont
+  \def\reviewcoverpagecont{%
+    \begingroup\let\cleardoublepage\pltx@cleartooddpage
+    \review@origcoverpagecont\endgroup}
+\fi

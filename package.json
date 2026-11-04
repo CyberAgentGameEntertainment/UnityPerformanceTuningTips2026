@@ -1,0 +1,24 @@
+{
+  "name": "unity-performance-tips-2026",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CyberAgentGameEntertainment/UnityPerformanceTuningTips2026.git"
+  },
+  "author": "",
+  "homepage": "https://github.com/CyberAgentGameEntertainment/UnityPerformanceTuningTips2026/blob/main/README.md",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "global-bundler": "gem install bundler",
+    "global": "npm run global-bundler",
+    "postinstall": "bundle install",
+    "pdf": "python3 scripts/build-review-pdf.py",
+    "web": "bash build-web.sh"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

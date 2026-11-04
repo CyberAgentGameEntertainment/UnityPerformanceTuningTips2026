@@ -1,0 +1,34 @@
+name: Build Re:VIEW to make distribution file
+# mainへのpushで、日本語の電子書籍版PDFをビルドしてArtifactに保存します。
+# 組版は scripts/build-review-pdf.py がDockerイメージ（review-custom:5.11）の中で行います。
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    name: Build Japanese e-book PDF
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build Japanese distribution file
+        run: ./build-in-docker-epub.sh
+
+      - name: Upload distribution file to GitHub artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Output documents (Japanese)
+          path: ./output/pdf/book-ebook-jp.pdf
+          if-no-files-found: error

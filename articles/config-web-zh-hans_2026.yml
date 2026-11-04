@@ -1,0 +1,5 @@
+# Web版（zh-hans）用の上書き設定
+inherit: ["config-epub-zh-hans_2026.yml"]
+
+highlight:
+  html: "rouge"

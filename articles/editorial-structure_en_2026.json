@@ -1,0 +1,9 @@
+{
+  "extends": "editorial-structure.json",
+  "part_titles": [
+    "Graphics Optimization",
+    "Scripting and Animation Optimization",
+    "Asset, Settings, and Build Optimization",
+    "Measurement and Automation"
+  ]
+}

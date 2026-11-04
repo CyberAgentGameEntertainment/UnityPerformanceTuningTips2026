@@ -1,0 +1,104 @@
+ja	en	ko	zh-hans	zh-hant
+チューニングバイブル	Tuning Bible	튜닝 바이블	调优宝典	調優寶典
+本書	this book	이 책	本书	本書
+本章	this chapter	이 장	本章	本章
+アセット	asset	에셋	资源	資產
+アセンブリ	assembly	어셈블리	程序集	組件
+アセットバンドル	AssetBundle	에셋 번들	AssetBundle	AssetBundle
+アタッチメント	attachment	어태치먼트	附件	附件
+アニメーション	animation	애니메이션	动画	動畫
+ウォームアップ	warmup	웜업	预热	預熱
+エージェント	agent	에이전트	智能体	代理
+AIコーディングエージェント	AI coding agent	AI 코딩 에이전트	AI 编程智能体	AI 程式設計代理
+スキル	skill	스킬	技能	技能
+エディター	Editor	에디터	编辑器	編輯器
+キャプチャ	capture	캡처	捕获	擷取
+グラフィックス	graphics	그래픽스	图形	圖形
+コンパイル	compile	컴파일	编译	編譯
+コールバック	callback	콜백	回调	回呼
+シェーダー	shader	셰이더	着色器	著色器
+シェーダーバリアント	shader variant	셰이더 베리언트	着色器变体	著色器變體
+バリアント	variant	베리언트	变体	變體
+シーン	scene	씬	场景	場景
+スパイク	spike	스파이크	尖峰	尖峰
+スタッター	stutter	스터터	卡顿	卡頓
+スクリプト	script	스크립트	脚本	腳本
+タイルメモリ	tile memory	타일 메모리	图块内存	圖塊記憶體
+タイル	tile	타일	图块	圖塊
+サブパス	subpass	서브패스	子通道	子通道
+テクスチャ	texture	텍스처	纹理	紋理
+ビルド	build	빌드	构建	建置
+フレーム	frame	프레임	帧	影格
+プラットフォーム	platform	플랫폼	平台	平台
+プロファイル	profile	프로파일	性能分析	效能分析
+プロファイラー	Profiler	프로파일러	Profiler	Profiler
+ベンチマーク	benchmark	벤치마크	基准测试	基準測試
+マテリアル	material	머티리얼	材质	材質
+メッシュ	mesh	메시	网格	網格
+メモリ	memory	메모리	内存	記憶體
+メインメモリ	main memory	메인 메모리	主内存	主記憶體
+メモリーレス	memoryless	메모리리스	无内存(memoryless)	無記憶體(memoryless)
+メタデータ	metadata	메타데이터	元数据	中繼資料
+ライフタイム	lifetime	라이프타임	生命周期	生命週期
+リソース	resource	리소스	资源	資源
+リフレクション	reflection	리플렉션	反射	反射
+レンダーターゲット	render target	렌더 타깃	渲染目标	渲染目標
+レンダリング	rendering	렌더링	渲染	渲染
+描画	draw / rendering	드로우 / 렌더링	绘制	繪製
+ロード	load	로드	加载	載入
+ランタイム	runtime	런타임	运行时	執行階段
+実機	physical device	실기기	真机	實機
+端末	device	기기	设备	裝置
+計測	measurement	계측	测量	測量
+負荷	load (cost)	부하	开销	負載
+最適化	optimization	최적화	优化	最佳化
+削減	reduction	절감	削减	削減
+解放	release	해제	释放	釋放
+破棄	destroy	파괴	销毁	銷毀
+生成	create / generate	생성	创建/生成	建立/產生
+参照	reference	참조	引用	參照
+帯域	bandwidth	대역폭	带宽	頻寬
+頂点	vertex	버텍스	顶点	頂點
+深度	depth	깊이	深度	深度
+パーティクル	particle	파티클	粒子	粒子
+物理	physics	피직스	物理	物理
+超越関数	transcendental function	초월 함수	超越函数	超越函數
+近似計算	approximation	근사 계산	近似计算	近似計算
+静的解析	static analysis	정적 분석	静态分析	靜態分析
+ガベージコレクション	garbage collection (GC)	가비지 컬렉션(GC)	垃圾回收（GC）	垃圾回收（GC）
+GraphicsStateCollection	GraphicsStateCollection (GSC)	GraphicsStateCollection(GSC)	GraphicsStateCollection (GSC)	GraphicsStateCollection (GSC)
+ストアアクション	store action	스토어 액션	存储操作	儲存動作
+ロードアクション	load action	로드 액션	加载操作	載入動作
+パフォーマンス	performance	퍼포먼스	性能	效能
+チューニング	tuning	튜닝	调优	調優
+スループット	throughput	스루풋	吞吐量	吞吐量
+モバイル	mobile	모바일	移动端	行動裝置
+決定的（deterministic）	deterministic	결정론적	确定性的	確定性的
+重複パッキング	duplicate packing	중복 패킹	重复打包	重複打包
+破棄（シーンの）	unload (a scene)	언로드	卸载（场景）	卸載（場景）
+位相ずらし	offset the phase	위상 분산(오프셋)	错开相位	錯開相位
+容量（アプリ・ビルドのサイズ）	app/package size	패키지 크기	包体大小（「体积」は使わない）	安裝包大小
+シナリオ（自動実行の手順）	scenario	시나리오	流程（「场景」はシーン専用）	流程
+環境プロファイル	environment profile	환경 프로파일	环境配置文件	環境設定檔
+理由（判断の根拠）	reason (rationale)	이유	理由（「原因」は症状→原因の原因専用）	理由（「原因」為症狀→原因專用）
+差分（diff）	diff	diff	变更（diff）	變更（diff）
+区切り（フレームの）	frame boundary	프레임 경계	帧边界	影格邊界
+Player（ビルド成果物）	Player	플레이어	Player（「播放器」「玩家」は使わない）	Player
+画面遷移	screen transition	화면 전환	界面跳转（「迁移」は migration と誤読）	畫面切換
+devirtualization	devirtualization	탈가상화	去虚拟化	去虛擬化
+ミニマックス近似	minimax approximation	미니맥스 근사	极小极大近似	極小極大近似
+リスト（コードリスト・図表）	listing	리스트	清单	清單
+間引き（頻度を下げる）	throttle / skip frames	간헐 실행	降频 / 隔帧执行	降頻 / 隔影格執行
+バンドル	Bundle	번들	Bundle（英語表記のまま。「包」と訳さない）	Bundle
+セクション（ELFのsection）	section		节（segmentは「段」）	節（segmentは「段」）
+対象（〜が対象）	target		「对象」は使わない。范围／面向／需要…的 を文脈で選ぶ	「對象」は使わない。範圍／面向／需要…的 を文脈で選ぶ
+実例	actual example		实际案例（「实例」はinstanceと衝突）	實際案例
+仕様（機構・APIの）	specification		规范／机制（「规格」は使わない）	規範／機制
+構成（組み合わせ・配置）	configuration		配置／组成（「构成」の字面写しは避ける）	配置／組成
+チャンネル（channel）	channel		channel（英語表記のまま。passの「通道」と衝突させない）	channel
+パス（描画パス）	pass		通道（channelとは別。channelは英語表記）	通道
+中黒「・」（並列）			「、」に置き換える（コード・固有名詞内を除く）	「、」に置き換える
+件			项／个（「件」の字面写しは避ける）	項／個
+重要度	severity		严重程度	嚴重程度
+参照元	referrer		引用方（「被引用方」は逆）	引用方
+直接化	devirtualization		去虚拟化	去虛擬化

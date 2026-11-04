@@ -1,0 +1,32 @@
+{
+ "editorial-intro-2": {
+  "//footnote[fn2][Base Class Library。System名前空間などの標準クラスライブラリ実装のこと]": [
+   "//footnote[fn2][Base Class Library。指 System 命名空间等标准类库的实现]"
+  ]
+ },
+ "editorial-reader-guide": {
+  "//indepimage[reader_guide_flow]": [
+   "//indepimage[reader_guide_flow_zh-hans]"
+  ]
+ },
+ "inada-taketo-1": {
+  "Microsoft Learn『CancellationTokenRegistration.Dispose Method』": [
+   "Microsoft Learn《CancellationTokenRegistration.Dispose Method》"
+  ],
+  "Microsoft Learn『CancellationTokenSource.Dispose Method』": [
+   "Microsoft Learn《CancellationTokenSource.Dispose Method》"
+  ]
+ },
+ "zhang-yubing-1": {
+  "ローマ字：ZHANG YUBING  ": [],
+  "名前：チャン ユービン  ": [
+   "姓名：ZHANG YUBING  "
+  ]
+ },
+ "zhang-yubing-2": {
+  "ローマ字：ZHANG YUBING  ": [],
+  "名前：チャン ユービン  ": [
+   "姓名：ZHANG YUBING  "
+  ]
+ }
+}

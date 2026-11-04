@@ -1,0 +1,13 @@
+ruby 3.4.12
+bundler 4.0.3
+pandoc 2.17.1.1
+This is LuaHBTeX, Version 1.15.0 (TeX Live 2022/Debian)
+debian 12.15
+ghostscript 10.0.0~dfsg-11+deb12u8
+nodejs 18.20.4+dfsg-1~deb12u3
+pandoc 2.17.1.1-2~deb12u1
+texlive-fonts-extra 2022.20230122-4
+texlive-lang-cjk 2022.20230122-1
+texlive-lang-japanese 2022.20230122-1
+texlive-latex-extra 2022.20230122-4
+texlive-luatex 2022.20230122-3

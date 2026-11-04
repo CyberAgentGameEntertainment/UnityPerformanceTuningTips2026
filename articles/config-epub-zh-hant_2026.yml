@@ -1,0 +1,13 @@
+# epub/PDF/Web（zh-hant・2026年版）用の上書き設定。原稿は articles/text_zh-hant_2026/
+# 序文・パート紹介などの editorial は articles/editorial_zh-hant_2026/ の翻訳版を使い、日本語版と同じ構成にする。
+inherit: ["config-epub-jp.yml"]
+
+language: zh-Hant
+booktitle: {name: "Unity 效能調校技巧 2026", file-as: "UnityPerformanceTips2026"}
+# 奥付の発行表記。翻訳版自身の発行日は未定のため、原典である日本語版の初版日を明示する。
+history: [["日文版 2026年11月2日 初版第1刷發行"]]
+manuscript_dir: text_zh-hant_2026
+catalogfile: catalog.yml
+editorial_dir: editorial_zh-hant_2026
+editorial_structure: editorial-structure_zh-hant_2026.json
+texstyle: ["reviewmacro", "review-font-zh-hant", "review-disclaimer-zh-hant"]

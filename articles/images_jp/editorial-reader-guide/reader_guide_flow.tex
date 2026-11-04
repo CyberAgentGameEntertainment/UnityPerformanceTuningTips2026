@@ -1,0 +1,88 @@
+% 課題別の逆引きガイドの流れ図。
+% reader_guide_flow.pdf（PDF用）と reader_guide_flow.png（Web・EPUB用）の元データです。
+% 生成: scripts/build-reader-guide-flow.sh
+\documentclass[uplatex,dvipdfmx,class=ujarticle,border=1mm]{standalone}
+\usepackage[deluxe,uplatex]{otf}
+\usepackage[T1]{fontenc}
+\usepackage[noalphabet,unicode]{pxchfon}
+\setgothicfont{BIZUDGothic-Regular.ttf}
+\setboldgothicfont{BIZUDGothic-Bold.ttf}
+\renewcommand{\sfdefault}{phv}
+\renewcommand\familydefault{\sfdefault}
+\renewcommand\kanjifamilydefault{\gtdefault}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\definecolor{ink}{HTML}{2B2B2B}
+\definecolor{panel}{HTML}{F2F4F7}
+\definecolor{sub}{HTML}{55606E}
+
+\newcommand{\colw}{33mm}
+\newcommand{\colgap}{36mm}
+
+\begin{document}
+\kanjiskip=.05zw plus.5pt minus.5pt\xkanjiskip=0pt
+\begin{tikzpicture}[
+  font=\sffamily\gtfamily,
+  line/.style={draw=ink, line width=0.6pt},
+  arrow/.style={line, -{Stealth[length=2mm]}},
+  measure/.style={draw=ink, line width=0.8pt, rounded corners=1.5mm, fill=white,
+    align=center, inner sep=1.8mm, text width=120mm},
+  symptom/.style={align=center, font=\small\bfseries\gtfamily, text=ink},
+  section/.style={fill=ink, text=white, font=\bfseries\gtfamily, minimum height=7mm,
+    text width=\colw, align=center, inner sep=0pt},
+  leaf/.style={fill=white, draw=ink!25, line width=0.4pt, text width=\colw-4mm,
+    align=left, inner xsep=2mm, inner ysep=1.6mm, font=\footnotesize\gtfamily},
+]
+% 計測
+\node[measure] (measure) at (1.5*\colgap, 0) {%
+  {\large\bfseries 計測する}\\[0.8mm]
+  {\small 進め方・基本ツール：前作 第1章・第3章\qquad
+  本書の計測手段：「まずは計測から」}};
+
+% 症状
+\node[symptom] (s1) at (0, -17mm) {アプリ容量が大きい};
+\node[symptom] (s2) at (\colgap, -17mm) {メモリ超過・クラッシュ};
+\node[symptom] (s3) at (2.5*\colgap, -17mm) {処理落ち・スパイク};
+
+\draw[line] (measure.south) -- ++(0, -4mm) coordinate (bus);
+\draw[line] (0, 0 |- bus) -- (2.5*\colgap, 0 |- bus);
+\foreach \s in {s1, s2, s3} \draw[arrow] (\s |- bus) -- (\s.north);
+
+% 課題（本書の節）
+\foreach \x/\name/\label in {0/c1/容量, 1/c2/メモリ, 2/c3/CPU, 3/c4/GPU}
+  \node[section] (\name) at (\x*\colgap, -28mm) {\label};
+\draw[arrow] (s1.south) -- (c1.north);
+\draw[arrow] (s2.south) -- (c2.north);
+\draw[line] (s3.south) -- ++(0, -1.6mm) coordinate (split);
+\draw[line] (c3 |- split) -- (c4 |- split);
+\draw[arrow] (c3 |- split) -- (c3.north);
+\draw[arrow] (c4 |- split) -- (c4.north);
+
+% 症状ごとの章
+% \leafitem{上のノード}{名前}{症状}{章}
+% \ch{部-章}{短縮した章タイトル}：症状と章、章と章の間を1行空け、2行目以降は番号の後ろにそろえる
+\newcommand{\ch}[2]{\par
+  \vspace{\baselineskip}
+  \hangindent=2.2em\hangafter=1
+  \noindent\makebox[2.2em][l]{#1}#2}
+\newcommand{\leafitem}[4]{%
+  \node[leaf, below=1.6mm of #1] (#2) {{\bfseries #3}\par{\color{sub}#4\par}};}
+
+\leafitem{c1}{c1a}{アセットが増え続ける}{\ch{3-1}{AssetBundleのライフタイム管理}\ch{3-2}{アセット肥大化の調査}}
+\leafitem{c1a}{c1b}{コードが大きい}{\ch{3-4}{Code Strippingによるコードの削減}\ch{3-5}{LTOによるコードの最適化}}
+
+\leafitem{c2}{c2a}{上限で落ちる}{\ch{3-6}{iOSのメモリ上限}}
+\leafitem{c2a}{c2b}{解放されない}{\ch{2-5}{UniTaskのライフタイム管理}\ch{3-1}{AssetBundleのライフタイム管理}}
+\leafitem{c2b}{c2c}{描画のメモリ}{\ch{1-1}{Render Graphのタイルメモリ最適化}\ch{1-5}{RSUVによる描画の最適化}\ch{2-3}{VATによるボーンアニメーションの軽量化}}
+
+\leafitem{c3}{c3a}{キャラクターが多い}{\ch{2-1}{キャラクターアニメーションのチューニング}\ch{2-2}{Animatorプーリングの初期化}\ch{2-3}{VATによるボーンアニメーションの軽量化}}
+\leafitem{c3a}{c3b}{単発のスパイク}{\ch{2-4}{ParticleSystemのSimulateのスパイク}}
+\leafitem{c3b}{c3c}{描画の登録・UI}{\ch{1-2}{UnsafePassによる描画登録の軽量化}\ch{2-6}{UIシステムの使い分け}}
+\leafitem{c3c}{c3d}{C\#コード全体}{\ch{3-5}{LTOによるコードの最適化}}
+
+\leafitem{c4}{c4a}{メモリ帯域}{\ch{1-1}{Render Graphのタイルメモリ最適化}\ch{1-3}{FinalBlitPassの省略}}
+\leafitem{c4a}{c4b}{シェーダーの演算}{\ch{1-4}{シェーダーの超越関数の軽量化}}
+\leafitem{c4b}{c4c}{初回描画のスタッター}{\ch{1-6}{シェーダーウォームアップ}}
+\leafitem{c4c}{c4d}{大量描画・端末差}{\ch{1-5}{RSUVによる描画の最適化}\ch{3-3}{端末別の描画設定}}
+\end{tikzpicture}
+\end{document}

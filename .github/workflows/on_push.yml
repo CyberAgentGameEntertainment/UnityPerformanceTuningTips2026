@@ -1,34 +1,108 @@
 name: Build Re:VIEW to make distribution file
-# mainへのpushで、日本語の電子書籍版PDFをビルドしてArtifactに保存します。
+# mainへのpushで、5言語の電子書籍版PDFをビルドしてArtifactに保存します。
+# Actions画面から手動実行（workflow_dispatch）すると、ビルド後にリリースを作成してPDFを添付し、
+# 続けてWeb版をGitHub Pagesへデプロイします。
 # 組版は scripts/build-review-pdf.py がDockerイメージ（review-custom:5.11）の中で行います。
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'リリースのタグ（例: v1.0.0）。既に存在するタグは指定できません'
+        required: true
+        type: string
+      notes:
+        description: 'リリースノート（省略時は空）'
+        required: false
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # 手動リリースがmainへのpushで中断されないよう、イベントごとにグループを分ける
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
-    name: Build Japanese e-book PDF
+    name: Build e-book PDF (${{ matrix.asset }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - lang: jp
+            asset: ja
+          - lang: en_2026
+            asset: en
+          - lang: ko_2026
+            asset: ko
+          - lang: zh-hans_2026
+            asset: zh-Hans
+          - lang: zh-hant_2026
+            asset: zh-Hant
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Build Japanese distribution file
+      - name: Build distribution file
         run: ./build-in-docker-epub.sh
+        env:
+          REVIEW_LANG: ${{ matrix.lang }}
+          OUTPUT_PDF: output/pdf/UnityPerformanceTuningTips2026-${{ matrix.asset }}.pdf
 
       - name: Upload distribution file to GitHub artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Output documents (Japanese)
-          path: ./output/pdf/book-ebook-jp.pdf
+          name: pdf-${{ matrix.asset }}
+          path: ./output/pdf/UnityPerformanceTuningTips2026-${{ matrix.asset }}.pdf
           if-no-files-found: error
+
+  release:
+    name: Create release
+    needs: build
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download PDFs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pdf-*
+          path: pdf
+          merge-multiple: true
+
+      - name: Create release with PDFs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          NOTES: ${{ inputs.notes }}
+        run: |
+          # gh release create は既存のタグを付け替えないため、別のコミットを指すタグに
+          # 今回のPDFが添付されるのを防ぐ目的で、既存のタグは拒否する
+          if gh api "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/$TAG" --jq '.[].ref' | grep -qx "refs/tags/$TAG"; then
+            echo "::error::タグ $TAG は既に存在します。新しいタグを指定してください"
+            exit 1
+          fi
+          ls -l pdf
+          gh release create "$TAG" pdf/*.pdf \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --notes "$NOTES"
+
+  deploy-web:
+    name: Deploy web
+    needs: release
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-web.yml

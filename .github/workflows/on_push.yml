@@ -84,6 +84,12 @@ jobs:
           TAG: ${{ inputs.tag }}
           NOTES: ${{ inputs.notes }}
         run: |
+          # gh release create は既存のタグを付け替えないため、別のコミットを指すタグに
+          # 今回のPDFが添付されるのを防ぐ目的で、既存のタグは拒否する
+          if gh api "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/$TAG" --jq '.[].ref' | grep -qx "refs/tags/$TAG"; then
+            echo "::error::タグ $TAG は既に存在します。新しいタグを指定してください"
+            exit 1
+          fi
           ls -l pdf
           gh release create "$TAG" pdf/*.pdf \
             --repo "$GITHUB_REPOSITORY" \

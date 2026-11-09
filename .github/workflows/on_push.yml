@@ -103,6 +103,10 @@ jobs:
     needs: release
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    # actions/configure-pages がPagesの設定を読むため、pagesの権限が必要
+    permissions:
+      contents: read
+      pages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4

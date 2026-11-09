@@ -5,3 +5,8 @@
 \setboldminchofont{NotoSansKR-Bold.otf}
 \setgothicfont{NotoSansKR-Regular.otf}
 \setboldgothicfont{NotoSansKR-Bold.otf}
+
+% ハングルの字形は送り幅が920/1000で、1zw（全角）の枠に置くと字間が空いて見える。
+% config-epub-ko_2026.yml の dvioptions で組み位置どおりに並べたうえで、字間を0.08zw詰めて字形本来の送り幅に戻す。
+% review-custom.sty の \reviewbegindocumenthook（\kanjiskip=.05zw）を ko 版だけ上書きする。
+\def\reviewbegindocumenthook{\kanjiskip=-.08zw plus.5pt minus.5pt\xkanjiskip=0pt}

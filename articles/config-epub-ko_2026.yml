@@ -11,3 +11,7 @@ catalogfile: catalog.yml
 editorial_dir: editorial_ko_2026
 editorial_structure: editorial-structure_ko_2026.json
 texstyle: ["reviewmacro", "review-font-ko", "review-disclaimer-ko"]
+# Noto Sans KR のハングルは送り幅が920/1000で、和文の1zwより狭い。dvipdfmxは既定でフォント自身の送り幅で
+# 字を並べるため、ハングルの後ろの欧文や「.」の前に隙間ができる。CIDフォントを固定幅として扱い、TeXの組み位置どおりに並べる。
+# 既定の "-d 5 -z 9" はそのまま残す。字間は review-font-ko.sty の \kanjiskip で詰める。
+dvioptions: "-d 5 -z 9 -C 0x0004"

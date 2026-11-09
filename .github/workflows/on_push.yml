@@ -1,7 +1,8 @@
 name: Build Re:VIEW to make distribution file
 # mainへのpushで、5言語の電子書籍版PDFをビルドしてArtifactに保存します。
 # Actions画面から手動実行（workflow_dispatch）すると、ビルド後にリリースを作成してPDFを添付し、
-# 続けてWeb版をGitHub Pagesへデプロイします。
+# 続けてWeb版をGitHub Pagesへデプロイします。Web版はリリースと同じ内容にそろえるため、
+# pushではデプロイしません。
 # 組版は scripts/build-review-pdf.py がDockerイメージ（review-custom:5.11）の中で行います。
 on:
   push:
@@ -97,12 +98,49 @@ jobs:
             --title "$TAG" \
             --notes "$NOTES"
 
-  deploy-web:
-    name: Deploy web
+  build-web:
+    name: Build web
     needs: release
     if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # PDFと同じDockerイメージ（Ruby・pandoc・Node.jsのバージョンを固定）でWeb版をビルドし、
+      # Markdown→Re:VIEW変換の結果をPDFと揃える。
+      - name: Build Docker image
+        run: docker build -t review-custom:5.11 .
+
+      - name: Build web pages (all languages)
+        run: |
+          docker run --rm --volume "${GITHUB_WORKSPACE}:/book" --workdir /book \
+            --env BUNDLE_FROZEN=true review-custom:5.11 \
+            sh -c 'set -e; bundle install --quiet; npm ci --ignore-scripts; npm run web'
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: articles/webroot
+
+  deploy-web:
+    name: Deploy web
+    needs: build-web
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
     permissions:
-      contents: read
       pages: write
       id-token: write
-    uses: ./.github/workflows/deploy-web.yml
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

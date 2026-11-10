@@ -2,16 +2,25 @@ name: Build Re:VIEW to make distribution file
 # mainへのpushで、5言語の電子書籍版PDFをビルドしてArtifactに保存します。
 # Actions画面から手動実行（workflow_dispatch）すると、ビルド後にリリースを作成してPDFを添付し、
 # 続けてWeb版をGitHub Pagesへデプロイします。Web版はリリースと同じ内容にそろえるため、
-# pushではデプロイしません。
+# pushではデプロイしません。手動実行で target に web を選ぶと、PDFのビルドとリリースを省いて
+# Web版だけをデプロイします。
 # 組版は scripts/build-review-pdf.py がDockerイメージ（review-custom:5.11）の中で行います。
 on:
   push:
     branches: [main]
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'リリースのタグ（例: v1.0.0）。既に存在するタグは指定できません'
+      target:
+        description: 'release: PDFをビルドしてリリースを作成し、Web版もデプロイする / web: Web版だけをデプロイする'
         required: true
+        default: release
+        type: choice
+        options:
+          - release
+          - web
+      tag:
+        description: 'リリースのタグ（例: v1.0.0）。target が release のときに必須。既に存在するタグや、削除したリリースのタグは指定できません'
+        required: false
         type: string
       notes:
         description: 'リリースノート（省略時は空）'
@@ -32,6 +41,7 @@ env:
 jobs:
   build:
     name: Build e-book PDF (${{ matrix.asset }})
+    if: github.event_name == 'push' || inputs.target == 'release'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -67,7 +77,7 @@ jobs:
   release:
     name: Create release
     needs: build
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'release'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -85,6 +95,10 @@ jobs:
           TAG: ${{ inputs.tag }}
           NOTES: ${{ inputs.notes }}
         run: |
+          if [ -z "$TAG" ]; then
+            echo "::error::target が release のときは tag を指定してください"
+            exit 1
+          fi
           # gh release create は既存のタグを付け替えないため、別のコミットを指すタグに
           # 今回のPDFが添付されるのを防ぐ目的で、既存のタグは拒否する
           if gh api "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/$TAG" --jq '.[].ref' | grep -qx "refs/tags/$TAG"; then
@@ -101,7 +115,10 @@ jobs:
   build-web:
     name: Build web
     needs: release
-    if: github.event_name == 'workflow_dispatch'
+    # target が web のときは release がスキップされるため、!cancelled() で前段の結果を自分で判定する
+    if: >-
+      !cancelled() && github.event_name == 'workflow_dispatch' &&
+      (inputs.target == 'web' || needs.release.result == 'success')
     runs-on: ubuntu-latest
     # actions/configure-pages がPagesの設定を読むため、pagesの権限が必要
     permissions:
@@ -133,7 +150,8 @@ jobs:
   deploy-web:
     name: Deploy web
     needs: build-web
-    if: github.event_name == 'workflow_dispatch'
+    # 祖先の release がスキップされても動くよう、build-web の結果だけで判定する
+    if: "!cancelled() && needs.build-web.result == 'success'"
     runs-on: ubuntu-latest
     permissions:
       pages: write

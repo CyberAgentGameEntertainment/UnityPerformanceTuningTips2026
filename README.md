@@ -31,9 +31,6 @@ Web版は [こちら](https://cyberagentgameentertainment.github.io/UnityPerform
 | 第3部 アセット・設定・ビルド最適化 | AssetBundleのライフタイム管理、アセット肥大化の調査、端末に応じた描画設定の切り替え、Code StrippingとLTO、iOSのメモリ上限 |
 | 第4部 計測と自動化 | iOS標準の計測機能、デイリービルドの実機プロファイリングの自動化、本書の知見をAIコーディングエージェントのスキルへ変換する試み |
 
-## 原稿とビルドについて
-原稿の記法やPDFのビルド方法は [README_CONTRIBUTOR.md](README_CONTRIBUTOR.md) を参照してください。
-
 ## ライセンスについて
 本リポジトリにはライセンスは適用していませんが、著作権法は適用されます。  
 詳しくは以下のページを参照してください。

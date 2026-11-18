@@ -1,8 +1,8 @@
 <p align="center">
-  <img width=350 src="Documentation/tips2026_logo.png" alt="Unity Performance Tips 2026">
+  <img width=350 src="Documentation/tips2026_logo.png" alt="Unity Performance Tuning Tips 2026">
 </p>
 
-# Unity Performance Tips 2026
+# Unity Performance Tuning Tips 2026
 
 **Docs** ([日本語](README.md), [English](README_EN.md), [한국어](README_KO.md), [简体中文](README_ZH-HANS.md), [繁體中文](README_ZH-HANT.md))
 

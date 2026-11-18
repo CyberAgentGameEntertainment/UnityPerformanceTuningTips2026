@@ -1,5 +1,5 @@
 <p align="center">
-  <img width=350 src="Documentation/tips2026_logo.png" alt="Unity Performance Tips 2026">
+  <img width=350 src="Documentation/tips2026_logo.png" alt="Unity Performance Tuning Tips 2026">
 </p>
 
 # Unity 퍼포먼스 튜닝 팁 2026

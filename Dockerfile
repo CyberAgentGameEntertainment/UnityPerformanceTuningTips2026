@@ -1,6 +1,6 @@
-# Pinned by digest (ruby 3.4.12 / Debian 12.15, built 2026-10-28). To update: pull ruby:3.4-bookworm,
+# Pinned by digest (ruby 3.4.13 / Debian 12.15). To update: pull ruby:3.4-bookworm,
 # copy its digest here, rebuild, and refresh docker/tool-versions.txt with scripts/check-docker-tools.sh --write.
-FROM ruby:3.4.12-bookworm@sha256:8853c6f24866429483fce3a869e61a6a13916beb2720468c6d95c78f41c0f564
+FROM ruby:3.4.13-bookworm@sha256:9d047dfbfd4d94305e66bcb5317d58af0ac6b8b77f892d497c728e45c0e0afba
 
 # TeX Live + Japanese support for Re:VIEW PDF builds
 RUN apt-get update && apt-get install -y --no-install-recommends \
